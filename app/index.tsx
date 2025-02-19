@@ -1,10 +1,21 @@
 import { Text, View, TouchableOpacity, StyleSheet, Image } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useAssets } from "expo-asset";
 
 export default function Index() {
+  const [assets, error] = useAssets([require('../assets/images/face-id.png')])
+  console.log("Erro a pegar a imagem inicial:" + error)
+  console.log("Imagem inicial:" + (assets ? assets[0].uri : "Não possível obte-la"))
   const [image, setImage] = useState<string | null>(null);
+
+  useEffect( () => {
+    if(assets){
+      setImage(assets[0].uri)
+    }
+  }, [assets]);
+  
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -31,7 +42,7 @@ export default function Index() {
       }}
     >
       <TouchableOpacity onPress={pickImage} style={styles.addButton} >
-        <Ionicons name="add-circle-outline" size={64} />
+        <Ionicons name="add-circle" size={64} color={'#005DB2'} />
       </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
       <TouchableOpacity style={styles.detectionButton}>
@@ -44,8 +55,9 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-around',
-    flexDirection: 'column'
+    justifyContent: 'space-between',
+    flexDirection: 'column',
+    backgroundColor:  '#17181A'
   },
   image: {
     alignItems: 'center',
