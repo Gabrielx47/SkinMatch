@@ -10,6 +10,7 @@ export default function Index() {
   console.log("Erro a pegar a imagem inicial:" + error)
   console.log("Imagem inicial:" + (assets != undefined ? assets[0].uri : "Não possível obte-la"))
   const [image, setImage] = useState<string | null>(null);
+  const [number, setNumber] = useState<string>('');
 
   useEffect( () => {
     if(assets){
@@ -30,6 +31,7 @@ export default function Index() {
     if (!result.canceled) {
       console.log("O resultado: " + result.assets[0].uri)
       setImage(result.assets[0].uri);
+      setNumber('');
     }
   };
 
@@ -43,6 +45,7 @@ export default function Index() {
       }
     }).then((response) => {
       console.log("Resposta: " + response.data['Tom'])
+      setNumber(response.data['Tom']);
     })
   };
 
@@ -59,6 +62,7 @@ export default function Index() {
         <Ionicons name="add-circle" size={64} color={'#005DB2'} />
       </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
+      <Text>Tom: {number}</Text>
       <TouchableOpacity style={styles.detectionButton}>
         <Text onPress={handleSkinToneDetection} style={styles.labelDetectionButton} >Detectar</Text>
       </TouchableOpacity>
