@@ -3,11 +3,12 @@ import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState, useEffect } from 'react'
 import { useAssets } from "expo-asset";
+import axios from 'axios';
 
 export default function Index() {
   const [assets, error] = useAssets([require('../assets/images/face-id.png')])
   console.log("Erro a pegar a imagem inicial:" + error)
-  console.log("Imagem inicial:" + (assets ? assets[0].uri : "Não possível obte-la"))
+  console.log("Imagem inicial:" + (assets != undefined ? assets[0].uri : "Não possível obte-la"))
   const [image, setImage] = useState<string | null>(null);
 
   useEffect( () => {
@@ -32,6 +33,19 @@ export default function Index() {
     }
   };
 
+  const handleSkinToneDetection = () => {
+    axios.postForm('http://127.0.0.1:5000/DetectarTomDePele', {
+      'imagem' : new File([image != null ? image.replace('data:image/jpeg;base64,', '') : ""], 'imagem.jpg'),
+      'formatoDaImagem': 'base64'
+    }, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    }).then((response) => {
+      console.log("Resposta: " + response.data['Tom'])
+    })
+  };
+
   return (
     <View
       style={{
@@ -46,7 +60,7 @@ export default function Index() {
       </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
       <TouchableOpacity style={styles.detectionButton}>
-        <Text style={styles.labelDetectionButton} >Detectar</Text>
+        <Text onPress={handleSkinToneDetection} style={styles.labelDetectionButton} >Detectar</Text>
       </TouchableOpacity>
     </View>
   );
