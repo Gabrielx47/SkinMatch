@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, StyleSheet, Image, Platform } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState, useEffect } from 'react'
@@ -13,6 +13,8 @@ export default function Index() {
   const [image, setImage] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [number, setNumber] = useState<string>(' ');
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [selectedImage, setSelectedImage] = useState<boolean>(false);
 
   useEffect( () => {
     if(assets){
@@ -20,55 +22,74 @@ export default function Index() {
     }
   }, [assets]);
   
- 
-
-  const pickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync(true);
-
+  const pickImageFromCamera = async (): Promise<ImagePicker.ImagePickerResult> => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
+    
     if (permissionResult.granted === false) {
       console.log("É necessário permissão para acessar a galeria de imagens!");
-      return;
+      return {assets: null, canceled: true};
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
+    return await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
       allowsEditing: false,
       aspect: [1, 1],
       quality: 0.5,
     });
+  }
+
+  const pickImageFromGallery = async (): Promise<ImagePicker.ImagePickerResult> => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync(true);
+
+      if (permissionResult.granted === false) {
+        console.log("É necessário permissão para acessar a galeria de imagens!");
+        return {assets: null, canceled: true};
+      }
+
+      return await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: false,
+        aspect: [1, 1],
+        quality: 0.5,
+      });
+  }
+
+  const pickImage = async (imageSelectionMode: string) => {
+    setIsModalVisible(false);
+    let result: ImagePicker.ImagePickerResult = {assets: null, canceled: true};
+    console.log("Seleção de imagem: " + imageSelectionMode)
+    if(imageSelectionMode == 'CAMERA'){
+      result = await pickImageFromCamera();  
+    } else if(imageSelectionMode == 'GALLERY'){
+      result = await pickImageFromGallery();
+    }
+
     console.log(result);
 
     if (!result.canceled) {
+      setSelectedImage(true);
+      setImage(result.assets[0].uri);
+      setNumber(' ');
       console.log("O resultado: " + result.assets[0].uri)
       if(Platform.OS === 'android'){
         const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: FileSystem.EncodingType.Base64 });  
         setImageBase64(base64);
         console.log("Imagem em base64: " + imageBase64);
         console.log("O resultado: " + result.assets[0].uri)
-      } else if(Platform.OS === 'web'){
-        setImageBase64((result.assets[0].uri).split(',')[1])
-      } 
-      setImage(result.assets[0].uri);
-      setNumber(' ');
+      }  
     }
   };
 
-  const base64ToBlob = (image: string) => {  
-    console.log("Imagem em base64 da aplicação móvel: " + image);
-    return new Blob([image ? image : ''], { type: 'image/jpg' });
-  }
-
+ 
   const getFomData = () => {
     const formData = new FormData();
 
     if(Platform.OS === 'android' && imageBase64 != null){
       console.log("É Mobile!!");
-      const blob = base64ToBlob(imageBase64);
       formData.append('imagem', imageBase64);
     }else if (Platform.OS === 'web' && image != null){
       console.log("É Web!!");
-      const blob = base64ToBlob(image.split(',')[1]);
-      formData.append('imagem', image.split(',')[1]); // new File([image.replace('data:image/jpg;base64,', '')], 'imagem.jpg')
+      formData.append('imagem', image.split(',')[1]); 
     }else{
        formData.append('imagem', new Blob([''], {type: 'image/jpg'}), 'imagem.jpg');
     } 
@@ -83,7 +104,7 @@ export default function Index() {
     getFomData()
     , {
       headers: {
-        'Content-Type': 'multipart/form-data' //application/json
+        'Content-Type': 'multipart/form-data' 
       }
     }).then((response) => {
       let classification = response.data['Tom']
@@ -95,15 +116,28 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={pickImage} style={styles.addButton} >
+      <Modal transparent={true} visible={isModalVisible} animationType="slide"  presentationStyle="overFullScreen">
+        <View style={styles.modalContainer}>
+          <View style={{height: 180, width: 200, backgroundColor: '#FDFEFE', alignItems: 'center', flexDirection: 'column', borderRadius: 16}}>
+            <Text style={{fontSize: 18}} >Selecione:</Text>
+            { Platform.OS == 'android' && <TouchableOpacity style={styles.cameraButton} onPress={() => {pickImage("CAMERA")}} >
+              <Text style={styles.buttonLabel} >Camera</Text >
+            </TouchableOpacity> }
+            <TouchableOpacity style={styles.galleryButton} onPress={() => {pickImage("GALLERY")}} >
+              <Text style={styles.buttonLabel} >Galeria</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
         <Ionicons name="add-circle" size={64} color={'#005DB2'} />
       </TouchableOpacity>
       {image && <Image source={{ uri: image }} style={styles.image} />}
       <View style={{height: 50, width: 150}}>
         <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {number}</Text>
       </View>
-      <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton}>
-        <Text style={styles.labelDetectionButton} >Detectar</Text>
+      <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton}  >
+        <Text style={styles.buttonLabel} >Detectar</Text>
       </TouchableOpacity>
     </View>
   );
@@ -132,10 +166,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  labelDetectionButton: {
-    color: '#FDFEFE'
+  buttonLabel: {
+    color: '#FDFEFE',
+    fontSize: 12,
+    flexShrink: 1
   },
   addButton: {
     marginTop: '10%'
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cameraButton: {
+    margin: 10,
+    marginBottom: '10%', 
+    width: 100,
+    height: 50,
+    borderRadius: 16,
+    backgroundColor: '#005DB2',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  galleryButton: {
+    margin: 10,
+    marginBottom: '10%', 
+    width: 100,
+    height: 50,
+    paddingHorizontal: 10,
+    borderRadius: 16,
+    backgroundColor: '#005DB2',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });
