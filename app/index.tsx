@@ -1,12 +1,16 @@
 import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAssets } from "expo-asset";
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
+import { useNavigation } from "@react-navigation/native";
 
-export default function Index() {
+interface IndexProps {imageUri: string; setImageUri: Function};
+
+export default function Index({imageUri, setImageUri}: IndexProps) {
+  const navigation = useNavigation<any>();
   const [assets, error] = useAssets([require('../assets/images/face-id.png')])
   console.log("Erro a pegar a imagem inicial:" + error)
   console.log("Imagem inicial:" + (assets != undefined ? assets[0].uri : "Não possível obte-la"))
@@ -17,12 +21,15 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<boolean>(false);
 
   useEffect( () => {
-    if(assets){
-      setImage(assets[0].uri)
+    console.log("Effect => imageUri: ", imageUri)
+    if(assets && imageUri == 'EMPTY') {
+        setImage(assets[0].uri);
+        setImageUri(assets[0].uri);
+        console.log("Imagem inicial de imageUri: ", imageUri)
     }
-  }, [assets]);
+  }, [assets, imageUri]);
   
-  const pickImageFromCamera = async (): Promise<ImagePicker.ImagePickerResult> => {
+  const pickImageFromTheCellPhoneCamera = async (): Promise<ImagePicker.ImagePickerResult> => {
     const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
     
     if (permissionResult.granted === false) {
@@ -36,7 +43,7 @@ export default function Index() {
       aspect: [1, 1],
       quality: 0.5,
     });
-  }
+  } 
 
   const pickImageFromGallery = async (): Promise<ImagePicker.ImagePickerResult> => {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync(true);
@@ -59,7 +66,7 @@ export default function Index() {
     let result: ImagePicker.ImagePickerResult = {assets: null, canceled: true};
     console.log("Seleção de imagem: " + imageSelectionMode)
     if(imageSelectionMode == 'CAMERA'){
-      result = await pickImageFromCamera();  
+      result = await pickImageFromTheCellPhoneCamera();  
     } else if(imageSelectionMode == 'GALLERY'){
       result = await pickImageFromGallery();
     }
@@ -113,33 +120,39 @@ export default function Index() {
       console.log("Tom: " + number)
     })
   };
-
+ 
   return (
-    <View style={styles.container}>
-      <Modal transparent={true} visible={isModalVisible} animationType="slide"  presentationStyle="overFullScreen">
-        <View style={styles.modalContainer}>
-          <View style={{height: 180, width: 200, backgroundColor: '#FDFEFE', alignItems: 'center', flexDirection: 'column', borderRadius: 16}}>
-            <Text style={{fontSize: 18}} >Selecione:</Text>
-            { Platform.OS == 'android' && <TouchableOpacity style={styles.cameraButton} onPress={() => {pickImage("CAMERA")}} >
-              <Text style={styles.buttonLabel} >Camera</Text >
-            </TouchableOpacity> }
-            <TouchableOpacity style={styles.galleryButton} onPress={() => {pickImage("GALLERY")}} >
-              <Text style={styles.buttonLabel} >Galeria</Text>
-            </TouchableOpacity>
+      <View style={styles.container}>
+        <Modal transparent={true} visible={isModalVisible} animationType="slide"  presentationStyle="overFullScreen">
+          <View style={styles.modalContainer}>
+            <View style={{height: 180, width: 200, backgroundColor: '#FDFEFE', alignItems: 'center', flexDirection: 'column', borderRadius: 16}}>
+              <Text style={{fontSize: 18}} >Selecione:</Text>
+              { Platform.OS == 'android' && 
+                <TouchableOpacity style={styles.cameraButton} onPress={() => {pickImage("CAMERA")}} >
+                  <Text style={styles.buttonLabel} >Camera</Text >
+                </TouchableOpacity> }
+              { Platform.OS == 'web' && 
+                <TouchableOpacity style={styles.cameraButton} onPress={() => {setIsModalVisible(false); navigation.navigate('webcam')}}  >
+                  <Text style={styles.buttonLabel} >Camera</Text >
+                </TouchableOpacity>
+              }
+              <TouchableOpacity style={styles.galleryButton} onPress={() => {pickImage("GALLERY")}} >
+                <Text style={styles.buttonLabel} >Galeria</Text>
+              </TouchableOpacity>
+            </View>
           </View>
+        </Modal>
+        <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
+          <Ionicons name="add-circle" size={64} color={'#005DB2'} />
+        </TouchableOpacity>
+        {imageUri && <Image source={{ uri: imageUri  }} style={styles.image} />}
+        <View style={{height: 50, width: 150}}>
+          <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {number}</Text>
         </View>
-      </Modal>
-      <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
-        <Ionicons name="add-circle" size={64} color={'#005DB2'} />
-      </TouchableOpacity>
-      {image && <Image source={{ uri: image }} style={styles.image} />}
-      <View style={{height: 50, width: 150}}>
-        <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {number}</Text>
+        <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton}  >
+          <Text style={styles.buttonLabel} >Detectar</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton}  >
-        <Text style={styles.buttonLabel} >Detectar</Text>
-      </TouchableOpacity>
-    </View>
   );
 }
 
