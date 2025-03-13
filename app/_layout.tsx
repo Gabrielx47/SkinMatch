@@ -11,14 +11,15 @@ export default function RootLayout() {
   console.log("Erro a pegar a imagem inicial:" + error)
   console.log("Imagem inicial:" + (assets != undefined ? assets[0].uri : "Não possível obte-la"))
   const [imageUri, setImageUri] = useState<string>('EMPTY');
+  const [tone, setTone] = useState<string>(' ');
 
   return (
     <Stack.Navigator >
       <Stack.Screen name="index" options={{ title: 'Skin Match' }} >
-        {() => <Index  imageUri={imageUri} setImageUri={setImageUri} /> } 
+        {() => <Index  imageUri={imageUri} setImageUri={setImageUri} tone={tone} setTone={setTone} /> } 
       </Stack.Screen>    
       <Stack.Screen name="webcam" options={{ title: 'Webcam' }}>
-        {() => <Webcam setImageUri={setImageUri} />}
+        {() => <Webcam setImageUri={setImageUri} setTone={setTone} />}
       </Stack.Screen>
     </Stack.Navigator>
   );

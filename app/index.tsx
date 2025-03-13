@@ -7,23 +7,18 @@ import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from "@react-navigation/native";
 
-interface IndexProps {imageUri: string; setImageUri: Function};
+interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function};
 
-export default function Index({imageUri, setImageUri}: IndexProps) {
+export default function Index({imageUri, setImageUri, tone, setTone}: IndexProps) {
   const navigation = useNavigation<any>();
   const [assets, error] = useAssets([require('../assets/images/face-id.png')])
   console.log("Erro a pegar a imagem inicial:" + error)
   console.log("Imagem inicial:" + (assets != undefined ? assets[0].uri : "Não possível obte-la"))
-  const [image, setImage] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [number, setNumber] = useState<string>(' ');
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  const [selectedImage, setSelectedImage] = useState<boolean>(false);
 
   useEffect( () => {
     console.log("Effect => imageUri: ", imageUri)
     if(assets && imageUri == 'EMPTY') {
-        setImage(assets[0].uri);
         setImageUri(assets[0].uri);
         console.log("Imagem inicial de imageUri: ", imageUri)
     }
@@ -63,7 +58,9 @@ export default function Index({imageUri, setImageUri}: IndexProps) {
 
   const pickImage = async (imageSelectionMode: string) => {
     setIsModalVisible(false);
+
     let result: ImagePicker.ImagePickerResult = {assets: null, canceled: true};
+
     console.log("Seleção de imagem: " + imageSelectionMode)
     if(imageSelectionMode == 'CAMERA'){
       result = await pickImageFromTheCellPhoneCamera();  
@@ -74,50 +71,48 @@ export default function Index({imageUri, setImageUri}: IndexProps) {
     console.log(result);
 
     if (!result.canceled) {
-      setSelectedImage(true);
-      setImage(result.assets[0].uri);
-      setNumber(' ');
+      setTone(' ');
+      setImageUri(result.assets[0].uri);
       console.log("O resultado: " + result.assets[0].uri)
-      if(Platform.OS === 'android'){
-        const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, { encoding: FileSystem.EncodingType.Base64 });  
-        setImageBase64(base64);
-        console.log("Imagem em base64: " + imageBase64);
-        console.log("O resultado: " + result.assets[0].uri)
-      }  
+      
     }
   };
 
  
-  const getFomData = () => {
+  const getFomData = async () => {
     const formData = new FormData();
 
-    if(Platform.OS === 'android' && imageBase64 != null){
+    if(Platform.OS === 'android'){
+      const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 });  
       console.log("É Mobile!!");
-      formData.append('imagem', imageBase64);
-    }else if (Platform.OS === 'web' && image != null){
+      console.log("Imagem em base64: " + base64);
+      formData.append('imagem', base64);
+    }else if (Platform.OS === 'web'){
       console.log("É Web!!");
-      formData.append('imagem', image.split(',')[1]); 
+      console.log("Imagem em base64: " + imageUri.split(',')[1]);
+      formData.append('imagem', imageUri.split(',')[1]);
     }else{
        formData.append('imagem', new Blob([''], {type: 'image/jpg'}), 'imagem.jpg');
-    } 
-    
+    }
+
     formData.append('formatoDaImagem', 'base64');
     return formData;
   }
 
-  const handleSkinToneDetection = () => {
-    console.log("Imagem em base64: " + image);
-    axios.post('http://192.168.100.22:5000/DetectarTomDePele', 
-    getFomData()
+  const handleSkinToneDetection = async () => {
+    const formData = await getFomData();
+    console.log("Imagem em base64: " + imageUri);
+    axios.post('https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele', // https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele  or http://192.168.100.22:5000/DetectarTomDePele
+    formData
     , {
       headers: {
-        'Content-Type': 'multipart/form-data' 
+        'Content-Type': 'multipart/form-data'
       }
     }).then((response) => {
       let classification = response.data['Tom']
       console.log("Resposta: " + classification)
-      setNumber(classification)
-      console.log("Tom: " + number)
+      setTone(classification)
+      console.log("Tom: " + tone)
     })
   };
  
@@ -147,7 +142,7 @@ export default function Index({imageUri, setImageUri}: IndexProps) {
         </TouchableOpacity>
         {imageUri && <Image source={{ uri: imageUri  }} style={styles.image} />}
         <View style={{height: 50, width: 150}}>
-          <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {number}</Text>
+          <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {tone}</Text>
         </View>
         <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton}  >
           <Text style={styles.buttonLabel} >Detectar</Text>

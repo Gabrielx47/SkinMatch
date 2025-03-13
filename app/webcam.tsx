@@ -4,13 +4,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRef} from 'react';
 import { useNavigation } from "@react-navigation/native";
 
-interface WebcamViewProps {setImageUri: Function};
+interface WebcamViewProps {setImageUri: Function; setTone: Function};
 
-export default function WebcamView({setImageUri}: WebcamViewProps) {
+export default function WebcamView({setImageUri, setTone}: WebcamViewProps) {
     const navigation = useNavigation<any>();
     const camera = useRef<CameraView>(null);
 
     const pickImageFromTheWebcam = async () => {
+        setTone(' ');
+        //ToDo: mudar o formato da imagem para .jpeg
         const permissionResult = await Camera.getCameraPermissionsAsync();
 
         if (!permissionResult.granted) {
