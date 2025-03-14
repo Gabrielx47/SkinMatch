@@ -6,6 +6,7 @@ import { useAssets } from "expo-asset";
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from "@react-navigation/native";
+//import {ImageManipulator} from "expo-image-manipulator"
 
 interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function; setMassege: Function; setMessageType: Function};
 
@@ -89,7 +90,10 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
       formData.append('imagem', base64);
     }else if (Platform.OS === 'web'){
       console.log("É Web!!");
-      console.log("Imagem em base64: " + imageUri.split(',')[1]);
+      /*const context = ImageManipulator.manipulate(imageUri);
+      context.resize({width: 460, height: 640})
+      const resizedImage = (await (await context.renderAsync()).saveAsync({base64: true})).uri;*/
+      console.log("Imagem em base64: " + imageUri);
       formData.append('imagem', imageUri.split(',')[1]);
     }else{
        formData.append('imagem', new Blob([''], {type: 'image/jpg'}), 'imagem.jpg');
@@ -101,7 +105,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
 
   const handleSkinToneDetection = async () => {
     const formData = await getFomData();
-    console.log("Imagem em base64: " + imageUri);
+  
     axios.post('https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele', // https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele  or http://192.168.100.22:5000/DetectarTomDePele
     formData
     , {
@@ -183,7 +187,7 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     color: '#FDFEFE',
-    fontSize: 12,
+    fontSize: 14,
     flexShrink: 1
   },
   addButton: {

@@ -12,7 +12,6 @@ export default function WebcamView({setImageUri, setTone}: WebcamViewProps) {
 
   const pickImageFromTheWebcam = async () => {
     setTone(' ');
-    //ToDo: mudar o formato da imagem para .jpeg
     const permissionResult = await Camera.getCameraPermissionsAsync();
 
     if (!permissionResult.granted) {
@@ -37,7 +36,7 @@ export default function WebcamView({setImageUri, setTone}: WebcamViewProps) {
    }
 
     return (
-      <CameraView style={styles.WebcamView} ref={camera} pictureSize='460x640'>
+      <CameraView style={styles.WebcamView} ref={camera} ratio='1:1'  >
         <TouchableOpacity onPress={() => {updateImage()} }>
           <Ionicons name="camera" size={64} color={'#FDFEFE'}/>
         </TouchableOpacity>
