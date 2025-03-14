@@ -7,9 +7,9 @@ import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from "@react-navigation/native";
 
-interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function};
+interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function; setMassege: Function; setMessageType: Function};
 
-export default function Index({imageUri, setImageUri, tone, setTone}: IndexProps) {
+export default function Index({imageUri, setImageUri, tone, setTone, setMassege, setMessageType}: IndexProps) {
   const navigation = useNavigation<any>();
   const [assets, error] = useAssets([require('../assets/images/face-id.png')])
   console.log("Erro a pegar a imagem inicial:" + error)
@@ -109,11 +109,18 @@ export default function Index({imageUri, setImageUri, tone, setTone}: IndexProps
         'Content-Type': 'multipart/form-data'
       }
     }).then((response) => {
-      let classification = response.data['Tom']
-      console.log("Resposta: " + classification)
-      setTone(classification)
-      console.log("Tom: " + tone)
-    })
+      setMassege("Tom de pele detectado!");
+      setMessageType("SUCESS");
+      let classification = response.data['Tom'];
+      setTone(classification);
+      navigation.navigate("messageModal");
+      console.log("Resposta: " + classification);
+      console.log("Tom: " + tone);
+    }).catch(() => {
+        setMassege("Tom de pele não detectado!");
+        setMessageType("ERROR");
+        navigation.navigate("messageModal");
+    });
   };
  
   return (
@@ -144,7 +151,7 @@ export default function Index({imageUri, setImageUri, tone, setTone}: IndexProps
         <View style={{height: 50, width: 150}}>
           <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {tone}</Text>
         </View>
-        <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton}  >
+        <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton} >
           <Text style={styles.buttonLabel} >Detectar</Text>
         </TouchableOpacity>
       </View>
