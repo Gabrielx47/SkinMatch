@@ -23,6 +23,12 @@ We'll need the following to get started:
    ```bash
     npx expo start
    ```
+4. Start the web app
+   ```bash
+    npx expo start --web
+   ```
+5. Start the mobile app
+   - Scan the QR Code present on the terminal using Expo Go. The QR Code is generated when you run the command ```npx expo start``` or ```npx expo start --web```
 
 In the output, you'll find options to open the app in a
 
