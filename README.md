@@ -7,10 +7,10 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 1. Prerequisites
 We'll need the following to get started:
 
-- Expo Go installed on a physical device
-- Node.js (LTS version) installed
-- VS Code or any other preferred code editor or IDE installed
-- A macOS, Linux, or Windows (PowerShell and WSL2) with a terminal window open
+   - Expo Go installed on a physical device
+   - Node.js (LTS version) installed
+   - VS Code or any other preferred code editor or IDE installed
+   - A macOS, Linux, or Windows (PowerShell and WSL2) with a terminal window open
 
 2. Install dependencies
 
