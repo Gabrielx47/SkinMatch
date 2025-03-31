@@ -129,7 +129,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
  
   return (
       <View style={styles.container}>
-        <Modal transparent={true} visible={isModalVisible} animationType="slide"  presentationStyle="overFullScreen">
+        <Modal transparent visible={isModalVisible} animationType="slide"  presentationStyle="overFullScreen">
           <View style={styles.modalContainer}>
             <View style={{height: 180, width: 200, backgroundColor: '#FDFEFE', alignItems: 'center', flexDirection: 'column', borderRadius: 16}}>
               <Text style={{fontSize: 18}} >Selecione:</Text>
@@ -197,6 +197,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   cameraButton: {
     margin: 10,
