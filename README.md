@@ -4,17 +4,31 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
-1. Install dependencies
+1. Prerequisites
+We'll need the following to get started:
+
+   - Expo Go installed on a physical device
+   - Node.js (LTS version) installed
+   - VS Code or any other preferred code editor or IDE installed
+   - A macOS, Linux, or Windows (PowerShell and WSL2) with a terminal window open
+
+2. Install dependencies
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. Start the app
 
    ```bash
     npx expo start
    ```
+4. Start the web app
+   ```bash
+    npx expo start --web
+   ```
+5. Start the mobile app
+   - Scan the QR Code present on the terminal using Expo Go. The QR Code is generated when you run the command ```npx expo start``` or ```npx expo start --web```
 
 In the output, you'll find options to open the app in a
 
