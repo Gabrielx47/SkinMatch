@@ -2,7 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import { useState } from "react"
 import Index from "./index";
 import Webcam from "./webcam";
-import MessageModal from './messageModal'
+import MessageModal from '../components/messageModal'
 import { useAssets } from "expo-asset";
 
 const Stack = createNativeStackNavigator();

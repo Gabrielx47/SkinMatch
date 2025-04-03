@@ -6,6 +6,9 @@ import { useAssets } from "expo-asset";
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from "@react-navigation/native";
+import { FontAwesome} from "@expo/vector-icons";
+import MessageModal from '../components/optionsModal'
+import OptionsModal from "../components/optionsModal";
 //import {ImageManipulator} from "expo-image-manipulator"
 
 interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function; setMassege: Function; setMessageType: Function};
@@ -129,25 +132,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
  
   return (
       <View style={styles.container}>
-        <Modal transparent visible={isModalVisible} animationType="slide"  presentationStyle="overFullScreen">
-          <View style={styles.modalContainer}>
-            <View style={{height: 180, width: 200, backgroundColor: '#FDFEFE', alignItems: 'center', flexDirection: 'column', borderRadius: 16}}>
-              <Text style={{fontSize: 18}} >Selecione:</Text>
-              { Platform.OS == 'android' && 
-                <TouchableOpacity style={styles.cameraButton} onPress={() => {pickImage("CAMERA")}} >
-                  <Text style={styles.buttonLabel} >Camera</Text >
-                </TouchableOpacity> }
-              { Platform.OS == 'web' && 
-                <TouchableOpacity style={styles.cameraButton} onPress={() => {setIsModalVisible(false); navigation.navigate('webcam')}}  >
-                  <Text style={styles.buttonLabel} >Camera</Text >
-                </TouchableOpacity>
-              }
-              <TouchableOpacity style={styles.galleryButton} onPress={() => {pickImage("GALLERY")}} >
-                <Text style={styles.buttonLabel} >Galeria</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} setImageUri={setImageUri} pickImage={pickImage} navigation={navigation} />
         <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
           <Ionicons name="add-circle" size={64} color={'#005DB2'} />
         </TouchableOpacity>
