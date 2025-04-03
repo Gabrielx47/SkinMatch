@@ -132,7 +132,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
       <View  style={styles.container}>
         <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} pickImage={pickImage} navigation={navigation} />
         <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
-          <Ionicons name="add-circle" size={64} color={'#005DB2'} />
+          <Ionicons name="add" size={60} color={'#FDFEFE'} />
         </TouchableOpacity>
         {imageUri && <Image source={{ uri: imageUri  }} style={styles.image} />}
         <View style={{height: 50, width: 150}}>
@@ -174,7 +174,13 @@ const styles = StyleSheet.create({
     flexShrink: 1
   },
   addButton: {
-    marginTop: '10%'
+    marginTop: '10%',
+    backgroundColor: '#005DB2',
+    height: 64,
+    width: 64,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   modalContainer: {
     flex: 1,
