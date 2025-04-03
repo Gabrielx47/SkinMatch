@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal, ScrollView } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState, useEffect, useRef } from 'react'
@@ -6,9 +6,7 @@ import { useAssets } from "expo-asset";
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from "@react-navigation/native";
-import { FontAwesome} from "@expo/vector-icons";
-import MessageModal from '../components/optionsModal'
-import OptionsModal from "../components/optionsModal";
+import OptionsModal from "@/components/optionsModal";
 //import {ImageManipulator} from "expo-image-manipulator"
 
 interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function; setMassege: Function; setMessageType: Function};
@@ -131,8 +129,8 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
   };
  
   return (
-      <View style={styles.container}>
-        <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} setImageUri={setImageUri} pickImage={pickImage} navigation={navigation} />
+      <View  style={styles.container}>
+        <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} pickImage={pickImage} navigation={navigation} />
         <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
           <Ionicons name="add-circle" size={64} color={'#005DB2'} />
         </TouchableOpacity>

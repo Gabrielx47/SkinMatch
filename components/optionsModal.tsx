@@ -2,9 +2,9 @@ import { Text, View, TouchableOpacity, StyleSheet, Platform, Modal } from "react
 import { FontAwesome} from "@expo/vector-icons";
 
 
-interface OptionsModalProps {isOptionsModalVisible: boolean, setIsOptionsModalVisible: Function; setImageUri: Function, pickImage: Function, navigation: any};
+interface OptionsModalProps {isOptionsModalVisible: boolean; setIsOptionsModalVisible: Function; pickImage: Function; navigation: any};
 
-export default function OptionsModal({isOptionsModalVisible, setIsOptionsModalVisible, setImageUri, pickImage, navigation}: OptionsModalProps) {
+export default function OptionsModal({isOptionsModalVisible, setIsOptionsModalVisible, pickImage, navigation}: OptionsModalProps) {
     return(
         <Modal transparent visible={isOptionsModalVisible} animationType="slide"  presentationStyle="overFullScreen">
           <View style={styles.modalContainer}>

@@ -1,11 +1,10 @@
 import { View, Modal, TouchableOpacity, StyleSheet, Text } from "react-native";
-import { useState} from 'react';
 import { useNavigation } from "@react-navigation/native";
 import { FontAwesome} from "@expo/vector-icons";
 
 interface MessageModalProps {message: string; messageType: string};
 
-export default function MessageModal({message, messageType}: MessageModalProps) {
+export function MessageModal({message, messageType}: MessageModalProps) {
   const navigation = useNavigation<any>();
 
   return (
