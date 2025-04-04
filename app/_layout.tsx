@@ -17,8 +17,8 @@ export default function RootLayout() {
   const [messageType, setMessageType] = useState<string>('');
 
   return (
-    <Stack.Navigator >
-      <Stack.Screen name="index" options={{ title: 'Skin Match' }} >
+    <Stack.Navigator screenOptions={{ headerShadowVisible: true, headerStyle: {backgroundColor: '#17181A'}, headerTintColor: '#FDFEFE', headerTitleStyle: {fontWeight: 'bold'},}} >
+      <Stack.Screen name="index" options={{ title: 'Skin Match', }} >
         {() => <Index  imageUri={imageUri} setImageUri={setImageUri} tone={tone} setTone={setTone} setMassege={setMassege} setMessageType={setMessageType} /> } 
       </Stack.Screen>    
       <Stack.Screen name="webcam" options={{ title: 'Webcam' }}>
