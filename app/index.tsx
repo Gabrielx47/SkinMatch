@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal, ScrollView } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal, ScrollView, Dimensions } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState, useEffect, useRef } from 'react'
@@ -132,11 +132,11 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
       <View  style={styles.container}>
         <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} pickImage={pickImage} navigation={navigation} />
         <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
-          <Ionicons name="add" size={60} color={'#FDFEFE'} />
+          <Ionicons name="add" size={50} color={'#FDFEFE'} />
         </TouchableOpacity>
-        {imageUri && <Image source={{ uri: imageUri  }} style={styles.image} />}
+        {imageUri && <Image source={{ uri: imageUri  }} style={styles.image} resizeMode="contain" />}
         <View style={{height: 50, width: 150}}>
-          <Text style={{color: '#17181A', backgroundColor: '#FDFEFE'}}>Tom de pele: {tone}</Text>
+          <Text style={{color: '#17181A', backgroundColor: '#FDFEFE', fontSize: 16}}>Tom de pele: {tone}</Text>
         </View>
         <TouchableOpacity onPress={handleSkinToneDetection} style={styles.detectionButton} >
           <Text style={styles.buttonLabel} >Detectar</Text>
@@ -151,12 +151,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flexDirection: 'column',
-    backgroundColor:  '#17181A'
+    backgroundColor:  'rgba(0, 0, 0, 0.2)',
   },
   image: {
     alignItems: 'center',
-    width: 300,
-    height: 300,
+    width:  300,
+    height: 300 ,
+    flexShrink: 0.5,
   },
   detectionButton: {
     margin: 10,
@@ -170,14 +171,15 @@ const styles = StyleSheet.create({
   },
   buttonLabel: {
     color: '#FDFEFE',
-    fontSize: 14,
+    fontSize: 16,
     flexShrink: 1
   },
   addButton: {
-    marginTop: '10%',
+    marginTop: '5%',
+    marginBottom: '2%',
     backgroundColor: '#005DB2',
-    height: 64,
-    width: 64,
+    height: 50,
+    width: 50,
     borderRadius: 50,
     alignItems: 'center',
     justifyContent: 'center',
