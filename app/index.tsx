@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity, StyleSheet, Image, Platform, Modal, ScrollView, Dimensions } from "react-native";
+import { Text, View, TouchableOpacity, StyleSheet, Image, Platform } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState, useEffect, useRef } from 'react'
@@ -7,6 +7,8 @@ import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
 import { useNavigation } from "@react-navigation/native";
 import OptionsModal from "@/components/optionsModal";
+import {StatusBar} from "expo-status-bar"
+import WaitingForResponseModal from "../components/waitingForResponseModal"
 //import {ImageManipulator} from "expo-image-manipulator"
 
 interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function; setMassege: Function; setMessageType: Function};
@@ -17,6 +19,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
   console.log("Erro a pegar a imagem inicial:" + error)
   console.log("Imagem inicial:" + (assets != undefined ? assets[0].uri : "Não possível obte-la"))
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isWaitingForResponseModalVisible, setIsWaitingForResponseModalVisible] = useState<boolean>(false);
 
   useEffect( () => {
     console.log("Effect => imageUri: ", imageUri)
@@ -105,8 +108,9 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
   }
 
   const handleSkinToneDetection = async () => {
+    setIsWaitingForResponseModalVisible(true);
     const formData = await getFomData();
-  
+
     axios.post('https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele', // https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele  or http://192.168.100.22:5000/DetectarTomDePele
     formData
     , {
@@ -114,6 +118,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
         'Content-Type': 'multipart/form-data'
       }
     }).then((response) => {
+      setIsWaitingForResponseModalVisible(false);
       setMassege("Tom de pele detectado!");
       setMessageType("SUCESS");
       let classification = response.data['Tom'];
@@ -122,6 +127,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
       console.log("Resposta: " + classification);
       console.log("Tom: " + tone);
     }).catch(() => {
+        setIsWaitingForResponseModalVisible(false);
         setMassege("Tom de pele não detectado!");
         setMessageType("ERROR");
         navigation.navigate("messageModal");
@@ -130,7 +136,9 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
  
   return (
       <View  style={styles.container}>
+        <StatusBar style="auto" />
         <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} pickImage={pickImage} navigation={navigation} />
+        <WaitingForResponseModal isWaitingForResponseModalModalVisible={isWaitingForResponseModalVisible}  />
         <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
           <Ionicons name="add" size={50} color={'#FDFEFE'} />
         </TouchableOpacity>
@@ -189,26 +197,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.5)'
-  },
-  cameraButton: {
-    margin: 10,
-    marginBottom: '10%', 
-    width: 100,
-    height: 50,
-    borderRadius: 16,
-    backgroundColor: '#005DB2',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  galleryButton: {
-    margin: 10,
-    marginBottom: '10%', 
-    width: 100,
-    height: 50,
-    paddingHorizontal: 10,
-    borderRadius: 16,
-    backgroundColor: '#005DB2',
-    justifyContent: 'center',
-    alignItems: 'center'
   }
 });

@@ -40,9 +40,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flexShrink: 1
   },
-  addButton: {
-    marginTop: '10%'
-  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
