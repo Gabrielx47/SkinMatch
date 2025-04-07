@@ -16,8 +16,7 @@ We'll need the following to get started:
    - Clone project: [https://github.com/Gabrielx47/SkinMatch.git](https://github.com/Gabrielx47/SkinMatch.git)
    - Open the project folder in VS Code
 
-4. Install dependencies
-   Access the project folder directory via the command line and run the following commands:
+4. Install dependencies accessing the project folder directory via the command line and run the following commands:
 
    ```bash
    npm install
