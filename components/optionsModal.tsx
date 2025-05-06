@@ -1,5 +1,5 @@
 import { Text, View, TouchableOpacity, StyleSheet, Platform, Modal } from "react-native";
-import { FontAwesome} from "@expo/vector-icons";
+import { FontAwesome } from "@expo/vector-icons";
 
 
 interface OptionsModalProps {isOptionsModalVisible: boolean; setIsOptionsModalVisible: Function; pickImage: Function; navigation: any};
