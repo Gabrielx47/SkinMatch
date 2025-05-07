@@ -17,7 +17,7 @@ export default function RootLayout() {
   const [messageType, setMessageType] = useState<string>('');
 
   return (
-    <Stack.Navigator screenOptions={{ headerShadowVisible: true, headerStyle: {backgroundColor: '#17181A'}, headerTintColor: '#FDFEFE', headerTitleStyle: {fontWeight: 'bold'},}} >
+    <Stack.Navigator screenOptions={{ headerShadowVisible:false, headerStyle: {backgroundColor: '#17181A'}, headerTintColor: '#FDFEFE', headerTitleStyle: {fontWeight: 'bold'},}} >
       <Stack.Screen name="index" options={{ title: 'Skin Match', }} >
         {() => <Index  imageUri={imageUri} setImageUri={setImageUri} tone={tone} setTone={setTone} setMassege={setMassege} setMessageType={setMessageType} /> } 
       </Stack.Screen>    
