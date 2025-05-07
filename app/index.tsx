@@ -1,7 +1,7 @@
 import { Text, View, TouchableOpacity, StyleSheet, Image, Platform } from "react-native";
 import * as ImagePicker from 'expo-image-picker'
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { useState, useEffect, useRef } from 'react'
+import {Ionicons} from '@expo/vector-icons';
+import { useState, useEffect} from 'react'
 import { useAssets } from "expo-asset";
 import axios from 'axios';
 import * as FileSystem from 'expo-file-system'
@@ -9,7 +9,6 @@ import { useNavigation } from "@react-navigation/native";
 import OptionsModal from "@/components/optionsModal";
 import {StatusBar} from "expo-status-bar"
 import WaitingForResponseModal from "../components/waitingForResponseModal"
-//import {ImageManipulator} from "expo-image-manipulator"
 
 interface IndexProps {imageUri: string; setImageUri: Function; tone: string; setTone: Function; setMassege: Function; setMessageType: Function};
 
@@ -40,7 +39,6 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
     return await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
       allowsEditing: false,
-      aspect: [1, 1],
       quality: 0.5,
     });
   } 
@@ -56,7 +54,6 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
       return await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: false,
-        aspect: [1, 1],
         quality: 0.5,
       });
   }
@@ -72,12 +69,13 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
     } else if(imageSelectionMode == 'GALLERY'){
       result = await pickImageFromGallery();
     }
-
-    console.log(result);
-
+     
+    
+    
     if (!result.canceled) {
+      console.log("Imagem redimensionada: " + result.assets[0].uri);
       setTone(' ');
-      setImageUri(result.assets[0].uri);
+      setImageUri(result.assets[0].uri);  
       console.log("O resultado: " + result.assets[0].uri)
       
     }
@@ -91,13 +89,11 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
       const base64 = await FileSystem.readAsStringAsync(imageUri, { encoding: FileSystem.EncodingType.Base64 });  
       console.log("É Mobile!!");
       console.log("Imagem em base64: " + base64);
+      
       formData.append('imagem', base64);
     }else if (Platform.OS === 'web'){
       console.log("É Web!!");
-      /*const context = ImageManipulator.manipulate(imageUri);
-      context.resize({width: 460, height: 640})
-      const resizedImage = (await (await context.renderAsync()).saveAsync({base64: true})).uri;*/
-      console.log("Imagem em base64: " + imageUri);
+      console.log("Tamanho imagem em base64: " + imageUri.length);
       formData.append('imagem', imageUri.split(',')[1]);
     }else{
        formData.append('imagem', new Blob([''], {type: 'image/jpg'}), 'imagem.jpg');
@@ -111,11 +107,11 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
     setIsWaitingForResponseModalVisible(true);
     const formData = await getFomData();
 
-    axios.post('https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele', // https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele  or http://192.168.100.22:5000/DetectarTomDePele
+    axios.post('https://instant-goldina-tcc2-b3a0db4c.koyeb.app/DetectarTomDePele', 
     formData
     , {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
       }
     }).then((response) => {
       setIsWaitingForResponseModalVisible(false);
@@ -140,7 +136,7 @@ export default function Index({imageUri, setImageUri, tone, setTone, setMassege,
         <OptionsModal isOptionsModalVisible={isModalVisible} setIsOptionsModalVisible={setIsModalVisible} pickImage={pickImage} navigation={navigation} />
         <WaitingForResponseModal isWaitingForResponseModalModalVisible={isWaitingForResponseModalVisible}  />
         <TouchableOpacity onPress={() => {setIsModalVisible(true)}} style={styles.addButton} >
-          <Ionicons name="add" size={50} color={'#FDFEFE'} />
+          <Ionicons name="add" size={50} color={'#FDFEFE'} /> 
         </TouchableOpacity>
         {imageUri && <Image source={{ uri: imageUri  }} style={styles.image} resizeMode="contain" />}
         <View style={{height: 50, width: 150}}>
