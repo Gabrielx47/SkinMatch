@@ -1,8 +1,11 @@
-# Welcome to your Expo app 👋
+# Skin Match
+Application has the purpose of detecting and recognizing skin tones. Through its integration with an API, in charge of analyzing the image of an individual's face to identify and classify the skin tone.
+
+## Installation
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
-## Get started
+### Get started
 
 1. Prerequisites
 We'll need the following to get started:
